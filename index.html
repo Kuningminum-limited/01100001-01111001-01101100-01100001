@@ -1,1 +1,2193 @@
-t
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chat Ulang Tahun</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root{
+  --primary:#ff6f61;
+  --muted:#6b7280;
+  --ig-purple-start:#7f5af0;
+  --ig-purple-end:#5a31f4;
+  --bg-start:#f8fbff;
+  --bg-end:#eaf6ff;
+  --border:#edf0f4;
+  --bubble-left:#f1f1f1;
+  --bubble-right-start:#7f5af0;
+  --bubble-right-end:#5a31f4;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  overflow:hidden;
+}
+
+.container{
+  width:100%;
+  max-width:460px;
+  height:calc(100vh - 24px);
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  transition:transform .38s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .38s ease;
+}
+
+.container.focus-zoom{
+  transform:scale(1.03);
+  box-shadow:0 30px 60px rgba(0,0,0,0.14);
+}
+
+.container.typing-focus{
+  transform:scale(1.02);
+  box-shadow:0 26px 50px rgba(127,90,240,0.15);
+}
+
+.container.intro-zoom .chat-box{
+  animation:chatIntroZoom .7s ease both;
+}
+
+@keyframes chatIntroZoom{
+  0%{transform:scale(.98); filter:saturate(.95);}
+  50%{transform:scale(1.015);}
+  100%{transform:scale(1); filter:saturate(1);}
+}
+
+.container.warp{
+  transform:scale(0.975) rotate(-0.6deg);
+  box-shadow:0 40px 80px rgba(0,0,0,0.12);
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(90deg,rgba(250,250,255,0.7), rgba(245,250,255,0.7));
+  flex:0 0 auto;
+}
+
+.topbar .avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #fff;
+  box-shadow:0 6px 18px rgba(80,70,120,0.08);
+}
+
+.topbar .info{
+  flex:1;
+  min-width:0;
+}
+
+.topbar .info .title{
+  margin:0;
+  font-weight:800;
+  color:var(--primary);
+  font-size:1rem;
+  line-height:1.2;
+}
+
+.topbar .info .sub{
+  margin:0;
+  font-size:0.8rem;
+  color:var(--muted);
+  line-height:1.2;
+}
+
+.header-icons{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  color:#444;
+  flex:0 0 auto;
+  opacity:.9;
+}
+
+.header-icons .icon{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  border:1px solid var(--border);
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+  font-size:15px;
+}
+
+.chat-wrap{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.chat-box{
+  padding:12px;
+  flex:1 1 auto;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  background:linear-gradient(180deg,#ffffff,#fbfcff);
+  transform-origin:center;
+}
+
+.row{
+  display:flex;
+  align-items:flex-end;
+  gap:4px;
+  width:100%;
+}
+
+.row.left{justify-content:flex-start}
+.row.right{justify-content:flex-end}
+
+.message-group{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  max-width:76%;
+}
+
+.row.left .message-group{
+  align-items:flex-start;
+}
+
+.row.right .message-group{
+  align-items:flex-end;
+  margin-right:2px;
+}
+
+.msg-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  flex:0 0 auto;
+  align-self:flex-end;
+}
+
+.name{
+  font-size:0.72rem;
+  color:var(--muted);
+  margin-bottom:6px;
+  padding:0 2px;
+}
+
+.row.right .name{
+  text-align:right;
+}
+
+.bubble{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  width:fit-content;
+  max-width:100%;
+  padding:10px 14px;
+  border-radius:18px;
+  font-size:0.92rem;
+  background:var(--bubble-left);
+  color:#111;
+  box-shadow:0 6px 12px rgba(15,15,20,0.03);
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+
+.row.right .bubble{
+  background:linear-gradient(90deg,var(--bubble-right-start),var(--bubble-right-end));
+  color:#fff;
+  border-bottom-right-radius:8px;
+}
+
+.row.left .bubble{
+  border-bottom-left-radius:8px;
+}
+
+.bubble.img-caption{
+  align-items:flex-start;
+}
+
+.bubble img.bubble-img{
+  max-width:100%;
+  height:auto;
+  border-radius:8px;
+  display:block;
+}
+
+.bubble .caption{
+  font-size:0.86rem;
+  color:inherit;
+  opacity:0.95;
+}
+
+.bubble a{
+  color:inherit;
+  text-decoration:none;
+  font-weight:600;
+  word-break:break-all;
+}
+
+.msg-actions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-left:0;
+  margin-right:0;
+  align-self:flex-end;
+}
+
+.msg-dots{
+  width:26px;
+  height:26px;
+  border:none;
+  border-radius:50%;
+  background:rgba(0,0,0,0.06);
+  color:#444;
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.row.right .msg-dots{
+  background:rgba(255,255,255,0.18);
+  color:#fff;
+}
+
+.input-wrap{
+  padding:10px 12px;
+  border-top:1px solid var(--border);
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  flex:0 0 auto;
+}
+
+.input-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid #eee;
+  font-size:0.95rem;
+  outline:none;
+  min-height:44px;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.input:focus{
+  border-color:#d9cfff;
+  box-shadow:0 10px 24px rgba(127,90,240,0.12);
+}
+
+.input.anim-zoom{
+  animation:inputZoomPulse .7s ease-in-out infinite;
+  transform-origin:center;
+}
+
+@keyframes inputZoomPulse{
+  0%,100%{
+    transform:scale(1);
+    box-shadow:0 0 0 rgba(0,0,0,0);
+  }
+  50%{
+    transform:scale(1.04);
+    box-shadow:0 10px 24px rgba(127,90,240,0.18);
+  }
+}
+
+.menu-btn{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid #eee;
+  background:#f9f9f9;
+  cursor:pointer;
+  font-weight:800;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+
+.send-btn{
+  padding:10px 18px;
+  border-radius:999px;
+  border:none;
+  background:linear-gradient(90deg,var(--ig-purple-start),var(--ig-purple-end));
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  flex:0 0 auto;
+}
+
+.helper{
+  font-size:0.82rem;
+  color:var(--muted);
+  text-align:center;
+  opacity:0.95;
+  min-height:20px;
+}
+
+.note{
+  text-align:center;
+  padding:8px 12px;
+  font-size:0.86rem;
+  color:var(--muted);
+  border-top:1px dashed #f0f0f0;
+}
+
+.fade{
+  opacity:0;
+  transform:translateY(8px);
+  animation:fadeIn .36s forwards;
+}
+
+@keyframes fadeIn{
+  to{opacity:1;transform:translateY(0)}
+}
+
+.typing-row .bubble{
+  min-width:64px;
+  padding:12px 14px;
+}
+
+.typing-dots{
+  display:inline-flex;
+  gap:4px;
+  align-items:center;
+}
+
+.typing-dots span{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+  display:inline-block;
+  animation:dotBounce 1s infinite ease-in-out;
+  opacity:.75;
+}
+
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+
+@keyframes dotBounce{
+  0%,80%,100%{transform:translateY(0); opacity:.45}
+  40%{transform:translateY(-4px); opacity:1}
+}
+
+.action-modal,
+.simple-modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+
+.action-content,
+.simple-content{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  width:min(92vw, 360px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:88vh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.action-content button,
+.simple-content button{
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #eee;
+  cursor:pointer;
+  font-weight:600;
+  background:#fff;
+}
+
+.action-content button:hover,
+.simple-content button:hover{
+  background:#f5f5f5;
+}
+
+.simple-content textarea,
+.simple-content input[type="text"]{
+  width:100%;
+  min-height:42px;
+  border:1px solid #e7e7e7;
+  border-radius:10px;
+  padding:10px;
+  font-family:inherit;
+  resize:vertical;
+  outline:none;
+}
+
+.simple-content .row-grid{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:start;
+}
+
+.memory-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:240px;
+  overflow:auto;
+  padding-right:4px;
+}
+
+.memory-section{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.memory-title{
+  font-weight:800;
+  font-size:0.92rem;
+  color:var(--primary);
+}
+
+.memory-item{
+  border:1px solid #eee;
+  border-radius:12px;
+  padding:10px;
+  background:#fafafa;
+}
+
+.memory-item .line{
+  font-size:0.88rem;
+  margin:0 0 6px 0;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.memory-item .meta{
+  font-size:0.76rem;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.memory-item .actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+
+.memory-item .actions button{
+  padding:8px 10px;
+  font-size:0.82rem;
+  border-radius:8px;
+}
+
+.overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(10,10,12,0.45);
+  z-index:40;
+}
+
+.menu{
+  width:100%;
+  max-width:360px;
+  background:#fff;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 30px 60px rgba(5,5,10,0.35);
+  text-align:center;
+  max-height:90vh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.start-btn{
+  margin-top:12px;
+  padding:12px 20px;
+  border-radius:999px;
+  border:none;
+  font-weight:800;
+  font-size:1rem;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--ig-purple-start),var(--ig-purple-end));
+  color:#fff;
+}
+
+.start-btn.disabled{
+  opacity:0.4;
+  pointer-events:none;
+}
+
+.year-list{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin:12px 0;
+  flex-wrap:wrap;
+}
+
+.year-item{
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid #eee;
+  cursor:pointer;
+  font-weight:700;
+  color:#333;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  min-width:90px;
+}
+
+.year-item.selected{
+  background:linear-gradient(90deg,#ffd6d0,#ffb8aa);
+  border-color:transparent;
+}
+
+.year-item img{
+  width:42px;
+  height:42px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+#exportArea{
+  position:fixed;
+  left:-10000px;
+  top:0;
+  width:460px;
+  pointer-events:none;
+  z-index:-1;
+  background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
+}
+
+.export-clone{
+  width:460px !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-width:460px !important;
+  overflow:visible !important;
+  box-shadow:none !important;
+  transform:none !important;
+  border-radius:16px !important;
+  background:#fff !important;
+}
+
+.export-clone .input-wrap{
+  display:none !important;
+}
+
+.export-clone .chat-wrap,
+.export-clone .chat-box{
+  overflow:visible !important;
+  height:auto !important;
+  max-height:none !important;
+}
+
+.export-clone .container{
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+
+.export-clone .topbar{
+  border-bottom:1px solid var(--border);
+}
+
+@media (max-width: 480px){
+  body{
+    padding:8px;
+  }
+
+  .container{
+    height:calc(100vh - 16px);
+    max-width:100%;
+  }
+
+  .action-content,
+  .simple-content{
+    width:94vw;
+    padding:16px;
+  }
+
+  .year-item{
+    min-width:80px;
+  }
+
+  .input-row{
+    gap:6px;
+  }
+
+  .send-btn{
+    padding:10px 14px;
+  }
+
+  .message-group{
+    max-width:80%;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="lockOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#111;color:white;display:none;justify-content:center;align-items:center;z-index:9999;font-family:Arial;">
+  <div style="text-align:center;padding:20px;">
+    <div style="font-size:60px;margin-bottom:10px;">🔒</div>
+    <h1 style="margin:0;">Website Dikunci</h1>
+    <p>Buka setelah 30 Maret 2026</p>
+    <p id="countdown"></p>
+  </div>
+</div>
+
+<div class="container" id="container">
+  <div class="topbar">
+    <img class="avatar" id="topAvatar" src="" alt="Kumin">
+    <div class="info">
+      <p class="title" id="topTitle">Kumin</p>
+      <p class="sub" id="topSub">Chat Ulang Tahun</p>
+    </div>
+    <div class="header-icons" aria-hidden="true">
+      <div class="icon"><i class="fa-solid fa-phone"></i></div>
+      <div class="icon"><i class="fa-solid fa-video"></i></div>
+    </div>
+  </div>
+
+  <div class="chat-wrap">
+    <div class="chat-box" id="chat"></div>
+    <div class="note" id="noteText">*aku membuat website nya di tanggal 18-3-2026*</div>
+  </div>
+
+  <div class="input-wrap">
+    <div class="input-row">
+      <input id="inputField" class="input" type="text" placeholder="Tulis pesan..." disabled />
+      <button class="menu-btn" id="openActions" disabled>/</button>
+      <button id="sendBtn" class="send-btn" disabled>KIRIM</button>
+    </div>
+    <div class="helper" id="helperText">Pilih tahun kelahiran dulu</div>
+  </div>
+</div>
+
+<div id="exportArea" aria-hidden="true"></div>
+
+<div class="action-modal" id="actionModal">
+  <div class="action-content">
+    <h3 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">Pilihan</h3>
+    <button onclick="openSocialLink()">Sosial Media Pembuat Website</button>
+    <button onclick="openMemoryModal()">AI Learning Memori</button>
+    <button onclick="triggerPickAvatar('kumin')">Ganti Avatar Kumin</button>
+    <button onclick="triggerPickAvatar('ayla')">Ganti Avatar Ayla</button>
+    <button onclick="changeAylaName()">Ganti Nama Ayla</button>
+    <button onclick="changeKuminAlias()">Ganti Alias Kumin</button>
+    <button onclick="saveToLocal()">Save Chat to Local Storage</button>
+    <button onclick="exportChatJSON()">Export Data Chat (JSON)</button>
+    <button onclick="openImportChatModal()">Import Data Chat (JSON)</button>
+    <button onclick="saveChatToImage()">Save Image Chat (.png)</button>
+    <button onclick="replayFromTop()" style="color:#b45309">Replay dari Awal</button>
+    <button onclick="resetChatOnly()" style="color:red">Reset Chat Saja</button>
+    <button onclick="resetDefaultSettings()" style="color:#b91c1c">Reset Default</button>
+    <button onclick="closeActionModal()">Batal</button>
+  </div>
+</div>
+
+<div class="simple-modal" id="memoryModal">
+  <div class="simple-content">
+    <h3 style="margin:0; text-align:center; color:var(--primary)">AI Learning Memori</h3>
+    <div id="memoryInfo" style="font-size:0.9rem;color:var(--muted);text-align:center;">Memori tersimpan: 0</div>
+
+    <div class="row-grid">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <input id="memoryUserInput" type="text" placeholder="Kamu: pesan yang dikirim user" />
+        <textarea id="memoryAiInput" placeholder="AI: pesan yang dikirim AI"></textarea>
+      </div>
+      <button onclick="addMemoryFromInput()" title="Tambah memori" style="width:44px;height:44px;border-radius:12px;font-size:22px;">+</button>
+    </div>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button onclick="exportMemoryJSON()">Export JSON</button>
+      <button onclick="document.getElementById('importMemoryFile').click()">Import JSON</button>
+      <button onclick="emptyTrashPermanently()" style="color:red">Hapus Tong Sampah</button>
+    </div>
+
+    <input id="importMemoryFile" type="file" accept="application/json" style="display:none" onchange="importMemoryJSON(event)">
+
+    <div class="memory-list" id="memoryList"></div>
+
+    <button onclick="closeMemoryModal()">Tutup</button>
+  </div>
+</div>
+
+<div class="simple-modal" id="replyModal">
+  <div class="simple-content">
+    <h3 style="margin:0; text-align:center; color:var(--primary)">Ubah Respon</h3>
+    <div id="replyTargetInfo" style="font-size:0.88rem;color:var(--muted);text-align:center;">-</div>
+    <textarea id="replyInput" placeholder="Tulis respon baru untuk pesan ini..."></textarea>
+    <button onclick="saveCustomReply()">Simpan Respon</button>
+    <button onclick="resetCustomReply()">Reset ke default</button>
+    <button onclick="closeReplyModal()">Batal</button>
+  </div>
+</div>
+
+<div class="simple-modal" id="importChatModal">
+  <div class="simple-content">
+    <h3 style="margin:0; text-align:center; color:var(--primary)">Import Data Chat</h3>
+    <input id="importChatFile" type="file" accept="application/json" />
+    <button onclick="pickImportChatFile()">Pilih File</button>
+    <button onclick="importChatFileNow()">Import</button>
+    <button onclick="closeImportChatModal()">Batal</button>
+  </div>
+</div>
+
+<input id="avatarPickKumin" type="file" accept="image/*" style="display:none">
+<input id="avatarPickAyla" type="file" accept="image/*" style="display:none">
+
+<div class="overlay" id="yearMenu">
+  <div class="menu fade">
+    <h2>Pilih Tahun Lahir</h2>
+    <div style="margin:10px 0 6px 0; text-align:left; font-size:0.9rem;">
+      <label style="display:flex; align-items:center; gap:10px; justify-content:center; cursor:pointer;">
+        <input type="checkbox" id="autoSaveCheck">
+        <span>simpan chat ke local?</span>
+      </label>
+    </div>
+    <div class="year-list" id="yearList">
+      <div class="year-item" data-year="2011">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80" alt="2011">
+        <div>2011</div>
+      </div>
+      <div class="year-item" data-year="2012">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&q=80" alt="2012">
+        <div>2012</div>
+      </div>
+    </div>
+    <button id="startBtn" class="start-btn disabled">Mulai</button>
+  </div>
+</div>
+
+<script>
+/* =========================
+   KONFIGURASI MUDAH DIUBAH
+========================= */
+const CONFIG = {
+  aylaAvatarDefault: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcST96yYGhsowSf7qwrED99gh1KwbO8nc2yUJB0mfWc-QasMlRqd",
+  kuminAvatarDefault: "https://yt3.googleusercontent.com/LJDGTqVXF1ia7nFSXK6QIYd_LcDq5pCRbQBlQuwdo2qkPOLS0NqB_CEySUmeCOvW95YFlC35YQ=s160-c-k-c0x00ffffff-no-rj",
+  aylaAvatarStorageKey: "chat_ayla_avatar_custom",
+  kuminAvatarStorageKey: "chat_kumin_avatar_custom",
+  aylaNameStorageKey: "chat_ayla_name_custom",
+  kuminAliasStorageKey: "chat_kumin_alias_custom",
+  chatJsonLink: "",
+  socialLink: "https://kuningminum.github.io/Kumin/Global%20Links.html",
+  titleName: "Kumin",
+  noteText: "*aku membuat website nya di tanggal 18-3-2026*",
+  lockDate: "2026-03-30T00:00:00"
+};
+
+let aylaAvatar = localStorage.getItem(CONFIG.aylaAvatarStorageKey) || CONFIG.aylaAvatarDefault;
+let kuminAvatar = localStorage.getItem(CONFIG.kuminAvatarStorageKey) || CONFIG.kuminAvatarDefault;
+let aylaName = localStorage.getItem(CONFIG.aylaNameStorageKey) || "Zhafira Ayla Puteri";
+let kuminAlias = localStorage.getItem(CONFIG.kuminAliasStorageKey) || "";
+
+/* =========================
+   ELEMEN
+========================= */
+const chatBox = document.getElementById('chat');
+const inputField = document.getElementById('inputField');
+const sendBtn = document.getElementById('sendBtn');
+const helperText = document.getElementById('helperText');
+const container = document.getElementById('container');
+const yearMenu = document.getElementById('yearMenu');
+const actionModal = document.getElementById('actionModal');
+const exportArea = document.getElementById('exportArea');
+const memoryModal = document.getElementById('memoryModal');
+const memoryUserInput = document.getElementById('memoryUserInput');
+const memoryAiInput = document.getElementById('memoryAiInput');
+const memoryInfo = document.getElementById('memoryInfo');
+const memoryListEl = document.getElementById('memoryList');
+const replyModal = document.getElementById('replyModal');
+const replyInput = document.getElementById('replyInput');
+const replyTargetInfo = document.getElementById('replyTargetInfo');
+const autoSaveCheck = document.getElementById('autoSaveCheck');
+const importChatModal = document.getElementById('importChatModal');
+const importChatFile = document.getElementById('importChatFile');
+const topAvatar = document.getElementById('topAvatar');
+const topTitle = document.getElementById('topTitle');
+const topSub = document.getElementById('topSub');
+const avatarPickKumin = document.getElementById('avatarPickKumin');
+const avatarPickAyla = document.getElementById('avatarPickAyla');
+
+/* =========================
+   STORAGE
+========================= */
+const STORAGE_CHAT = 'kumin_chat_state_v5';
+const STORAGE_YEAR = 'kumin_selected_year_v5';
+const STORAGE_MEMORY = 'ai_learning_memori_kumin_v2';
+const STORAGE_AUTOSAVE = 'kumin_auto_save_local_v5';
+const STORAGE_DIRTY = 'kumin_dirty_flag_v5';
+
+/* =========================
+   DATA
+========================= */
+const baseReplies = [
+  "Semoga hari kamu penuh senyum 😄",
+  "Semoga panjang umur 🎉",
+  "HBD Zhafira Ayla Puteri",
+  "Semoga semua yang kamu harapkan tercapai ✨",
+  "Tetap jadi orang baik ya 😌",
+  "Semoga sehat selalu 💪",
+  "Jangan lupa bahagia hari ini 😭",
+  "Semoga banyak hal baik datang 🌸",
+  "Terus semangat ya 🔥",
+  "Jangan nyerah sama mimpi kamu 😤",
+  "Semoga hari ini spesial banget 🎂",
+  "Semoga kamu selalu dikelilingi orang baik 🤍",
+  "Jangan lupa istirahat juga 😴",
+  "Semoga tahun ini lebih seru 🎈",
+  "Semoga makin kuat dan dewasa 💫",
+  "Terus jadi diri sendiri ya 🙂‍↕️",
+  "Semoga semua berjalan lancar 🚀",
+  "Semoga kamu selalu tersenyum 😄",
+  "Semoga banyak keberuntungan 🍀",
+  "Terima kasih sudah ada 🥹",
+  "Hari ini harinya kamu loh 😆",
+  "Semoga semua hal kecil bikin kamu senang 🌷",
+  "Jangan lupa nikmatin harinya ya 😌",
+  "Semoga hari kamu penuh kejutan seru 🎁",
+  "Btw Kamu Mau tau kah Arti dari nama web nya itu kode binner bisa di ubah ke teks kok kalo penasaran apa arti 1 dan 0",
+  { type:"link", href:"https://dnschecker.org/binary-to-text-translator.php", label:"Binner Translator - takutnya kamu males ketik 01100001-01111001-01101100-01100001" },
+  "Semoga banyak tawa hari ini 😂",
+  "omong omong boleh tau ga yang bener 2012 atau 2011 kasih tau di genshin atau di ig ya (kalo ig belum di block)",
+  { type:"image", src:"https://upload.wikimedia.org/wikipedia/en/6/67/Times_Educational_Supplement_logo.svg", caption:"gampang aja kok" },
+  { type:"link", href:"https://kuningminum.github.io/Kumin/Global%20Links.html", label:"sosial media pembuat web" },
+  "Makasih ya udah jadi teman baikku 😭 ga kayak si f)",
+  { type:"text", content:"Aku ingat kok nama kamu Zhafira Ayla Puteri 😌" },
+  { type:"image", src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT31yHrdaSP-lQqVszngux27O5NJDQXtwCyuQ&s", caption:"Ini alasannya aku nanya itu 😏" }
+];
+
+let selectedYear = null;
+let messageCounter = 0;
+let autoSaveLocal = false;
+let dirtyChanges = false;
+let activeTypingRow = null;
+let memoryActive = [];
+let memoryTrash = [];
+let chatMessages = [];
+
+/* =========================
+   UTIL
+========================= */
+function formatTanggalFile(){
+  return new Date().toLocaleDateString('id-ID').replaceAll('/', '-');
+}
+
+function normalizeText(text){
+  return String(text || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function getUsiaDariTahun(){
+  return 2026 - Number(selectedYear || 2026);
+}
+
+function getGreetingText(){
+  return `hari ini aku ulang tahun ke ${getUsiaDariTahun()}`;
+}
+
+function getDefaultGreetingReply(){
+  return `Selamat ulang tahun ke ${getUsiaDariTahun()} ya 🎉`;
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#39;');
+}
+
+function isImageUrl(s){
+  try {
+    const u = new URL(s);
+    return /\.(svg|png|jpe?g|gif|webp)$/i.test(u.pathname);
+  } catch(e){
+    return false;
+  }
+}
+
+function isValidUrl(s){
+  try {
+    return Boolean(new URL(s));
+  } catch(e){
+    return false;
+  }
+}
+
+function getMemoryData(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(STORAGE_MEMORY) || '{"active":[],"trash":[]}');
+    return {
+      active: Array.isArray(raw.active) ? raw.active : [],
+      trash: Array.isArray(raw.trash) ? raw.trash : []
+    };
+  }catch(e){
+    return { active: [], trash: [] };
+  }
+}
+
+function getKuminDisplayName(){
+  return kuminAlias.trim() ? `${CONFIG.titleName} (${kuminAlias.trim()})` : CONFIG.titleName;
+}
+
+function updateHeaderTexts(){
+  topAvatar.src = kuminAvatar;
+  topTitle.innerText = CONFIG.titleName;
+  topSub.innerText = kuminAlias.trim() ? `alias: ${kuminAlias.trim()}` : 'Chat Ulang Tahun';
+  document.getElementById('noteText').innerText = CONFIG.noteText;
+}
+
+function normalizeReplyItem(item){
+  if(item && typeof item === 'object'){
+    if(item.kind) return item;
+    if(item.type === 'image'){
+      return { kind:'image', text:item.src || '', caption:item.caption || '' };
+    }
+    if(item.type === 'link'){
+      return { kind:'link', text:item.href || '', linkLabel:item.label || item.href || '' };
+    }
+    if(item.type === 'text'){
+      return { kind:'text', text:item.content || '' };
+    }
+    return {
+      kind: item.kind || 'text',
+      text: item.text || item.content || item.src || item.href || '',
+      caption: item.caption || '',
+      linkLabel: item.linkLabel || item.label || ''
+    };
+  }
+  return { kind:'text', text:String(item || '') };
+}
+
+/* =========================
+   PERSIST
+========================= */
+function persistState(){
+  localStorage.setItem(STORAGE_CHAT, JSON.stringify({
+    selectedYear,
+    messageCounter,
+    chatMessages
+  }));
+  localStorage.setItem(STORAGE_YEAR, selectedYear || '');
+  localStorage.setItem(STORAGE_AUTOSAVE, autoSaveLocal ? '1' : '0');
+  localStorage.setItem(STORAGE_DIRTY, dirtyChanges ? '1' : '0');
+  localStorage.setItem(STORAGE_MEMORY, JSON.stringify({ active: memoryActive, trash: memoryTrash }));
+  localStorage.setItem(CONFIG.aylaAvatarStorageKey, aylaAvatar);
+  localStorage.setItem(CONFIG.kuminAvatarStorageKey, kuminAvatar);
+  localStorage.setItem(CONFIG.aylaNameStorageKey, aylaName);
+  localStorage.setItem(CONFIG.kuminAliasStorageKey, kuminAlias);
+  updateHeaderTexts();
+}
+
+function markDirty(){
+  dirtyChanges = true;
+  if(autoSaveLocal){
+    persistState();
+    dirtyChanges = false;
+  }
+}
+
+function markSaved(){
+  dirtyChanges = false;
+  persistState();
+}
+
+/* =========================
+   MEMORY
+========================= */
+function updateMemoryUI(){
+  memoryInfo.innerText = `Aktif: ${memoryActive.length} | Tong sampah: ${memoryTrash.length}`;
+  memoryListEl.innerHTML = '';
+
+  const activeSection = document.createElement('div');
+  activeSection.className = 'memory-section';
+
+  const activeTitle = document.createElement('div');
+  activeTitle.className = 'memory-title';
+  activeTitle.innerText = 'Memori Aktif';
+  activeSection.appendChild(activeTitle);
+
+  if(memoryActive.length === 0){
+    const empty = document.createElement('div');
+    empty.style.fontSize = '0.88rem';
+    empty.style.color = 'var(--muted)';
+    empty.style.textAlign = 'center';
+    empty.innerText = 'Belum ada memori disimpan.';
+    activeSection.appendChild(empty);
+  } else {
+    memoryActive.forEach((item, index) => {
+      activeSection.appendChild(buildMemoryCard(item, index, false));
+    });
+  }
+
+  const trashSection = document.createElement('div');
+  trashSection.className = 'memory-section';
+  trashSection.style.marginTop = '10px';
+
+  const trashTitle = document.createElement('div');
+  trashTitle.className = 'memory-title';
+  trashTitle.innerText = 'Tong Sampah';
+  trashSection.appendChild(trashTitle);
+
+  if(memoryTrash.length === 0){
+    const emptyTrash = document.createElement('div');
+    emptyTrash.style.fontSize = '0.88rem';
+    emptyTrash.style.color = 'var(--muted)';
+    emptyTrash.style.textAlign = 'center';
+    emptyTrash.innerText = 'Tong sampah masih kosong.';
+    trashSection.appendChild(emptyTrash);
+  } else {
+    memoryTrash.forEach((item, index) => {
+      trashSection.appendChild(buildMemoryCard(item, index, true));
+    });
+  }
+
+  memoryListEl.appendChild(activeSection);
+  memoryListEl.appendChild(trashSection);
+}
+
+function buildMemoryCard(item, index, isTrash){
+  const card = document.createElement('div');
+  card.className = 'memory-item';
+
+  const userLine = document.createElement('div');
+  userLine.className = 'line';
+  userLine.innerHTML = `<strong>Kamu:</strong> ${escapeHtml(item.user || '')}`;
+
+  const aiLine = document.createElement('div');
+  aiLine.className = 'line';
+  aiLine.innerHTML = `<strong>AI:</strong> ${escapeHtml(item.ai || '')}`;
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.innerText = item.savedAt ? new Date(item.savedAt).toLocaleString('id-ID') : '';
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+
+  if(isTrash){
+    const recoverBtn = document.createElement('button');
+    recoverBtn.innerText = 'Recover';
+    recoverBtn.onclick = () => recoverMemory(index);
+    actions.appendChild(recoverBtn);
+  } else {
+    const trashBtn = document.createElement('button');
+    trashBtn.innerText = 'Remove';
+    trashBtn.onclick = () => moveMemoryToTrash(index);
+    actions.appendChild(trashBtn);
+  }
+
+  card.appendChild(userLine);
+  card.appendChild(aiLine);
+  card.appendChild(meta);
+  card.appendChild(actions);
+  return card;
+}
+
+function moveMemoryToTrash(index){
+  if(index < 0 || index >= memoryActive.length) return;
+  const item = memoryActive.splice(index, 1)[0];
+  memoryTrash.unshift({ ...item, movedAt: new Date().toISOString() });
+  saveMemoryData();
+}
+
+function recoverMemory(index){
+  if(index < 0 || index >= memoryTrash.length) return;
+  const item = memoryTrash.splice(index, 1)[0];
+  memoryActive.unshift({
+    user: item.user,
+    ai: item.ai,
+    savedAt: item.savedAt || new Date().toISOString()
+  });
+  saveMemoryData();
+}
+
+function saveMemoryData(){
+  persistState();
+  updateMemoryUI();
+  markDirty();
+}
+
+function addMemoryFromInput(){
+  const user = memoryUserInput.value.trim();
+  const ai = memoryAiInput.value.trim();
+  if(!user || !ai){
+    alert('Isi "Kamu" dan "AI" dulu ya.');
+    return;
+  }
+
+  memoryActive.unshift({
+    user,
+    ai,
+    savedAt: new Date().toISOString()
+  });
+
+  memoryUserInput.value = '';
+  memoryAiInput.value = '';
+  saveMemoryData();
+  alert('Memori berhasil ditambah!');
+}
+
+function exportMemoryJSON(){
+  const data = { active: memoryActive, trash: memoryTrash };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `memory-kumin-${formatTanggalFile()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importMemoryJSON(event){
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      let nextActive = [];
+      let nextTrash = [];
+
+      if(Array.isArray(parsed)){
+        nextActive = parsed;
+      } else if(parsed && typeof parsed === 'object'){
+        nextActive = Array.isArray(parsed.active) ? parsed.active : [];
+        nextTrash = Array.isArray(parsed.trash) ? parsed.trash : [];
+      } else {
+        throw new Error('Format tidak valid');
+      }
+
+      const normalize = arr => arr
+        .filter(x => x && typeof x === 'object')
+        .map(x => ({
+          user: String(x.user || '').trim(),
+          ai: String(x.ai || '').trim(),
+          savedAt: x.savedAt || new Date().toISOString()
+        }))
+        .filter(x => x.user && x.ai);
+
+      const activeClean = normalize(nextActive);
+      const trashClean = normalize(nextTrash);
+
+      if(!confirm(`Import ${activeClean.length} aktif dan ${trashClean.length} di tong sampah?`)){
+        event.target.value = '';
+        return;
+      }
+
+      memoryActive = activeClean;
+      memoryTrash = trashClean;
+      saveMemoryData();
+      alert('Memori JSON berhasil diimport!');
+    }catch(err){
+      alert('File JSON tidak valid.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function emptyTrashPermanently(){
+  if(memoryTrash.length === 0){
+    alert('Tong sampah masih kosong.');
+    return;
+  }
+
+  if(!confirm('Konfirmasi 1/3: kosongkan tong sampah?')) return;
+  if(!confirm('Konfirmasi 2/3: serius mau hapus permanen?')) return;
+
+  const typed = prompt('Konfirmasi 3/3: ketik RESET untuk hapus permanen');
+  if((typed || '').trim() !== 'RESET'){
+    alert('Batal. Teks tidak cocok.');
+    return;
+  }
+
+  memoryTrash = [];
+  saveMemoryData();
+  alert('Tong sampah sudah dikosongkan.');
+}
+
+/* =========================
+   MODAL
+========================= */
+function openSocialLink(){
+  window.open(CONFIG.socialLink, '_blank', 'noopener,noreferrer');
+}
+
+function openMemoryModal(){
+  updateMemoryUI();
+  memoryModal.style.display = 'flex';
+}
+
+function closeActionModal(){ actionModal.style.display = 'none'; }
+function closeMemoryModal(){ memoryModal.style.display = 'none'; }
+function closeReplyModal(){ replyModal.style.display = 'none'; }
+function closeImportChatModal(){ importChatModal.style.display = 'none'; }
+
+/* =========================
+   CHAT RENDER
+========================= */
+function addTypingBubble(){
+  removeTypingBubble();
+
+  const row = document.createElement('div');
+  row.className = 'row left typing-row fade';
+
+  const avatarEl = document.createElement('img');
+  avatarEl.className = 'msg-avatar';
+  avatarEl.src = kuminAvatar;
+  avatarEl.alt = CONFIG.titleName;
+
+  const group = document.createElement('div');
+  group.className = 'message-group';
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'name';
+  nameEl.innerText = getKuminDisplayName();
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
+
+  group.appendChild(nameEl);
+  group.appendChild(bubble);
+  row.appendChild(avatarEl);
+  row.appendChild(group);
+
+  chatBox.appendChild(row);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  activeTypingRow = row;
+  return row;
+}
+
+function removeTypingBubble(){
+  if(activeTypingRow && activeTypingRow.remove){
+    activeTypingRow.remove();
+  }
+  activeTypingRow = null;
+}
+
+function renderBubbleContent(bubble, item){
+  const normalized = normalizeReplyItem(item);
+
+  if(normalized.kind === 'image' || isImageUrl(normalized.text)){
+    bubble.classList.add('img-caption');
+    const img = document.createElement('img');
+    img.className = 'bubble-img';
+    img.src = normalized.text;
+    img.crossOrigin = "anonymous";
+    bubble.appendChild(img);
+
+    if(normalized.caption){
+      const cap = document.createElement('div');
+      cap.className = 'caption';
+      cap.innerText = normalized.caption;
+      bubble.appendChild(cap);
+    }
+    return;
+  }
+
+  if(normalized.kind === 'link' || isValidUrl(normalized.text)){
+    const a = document.createElement('a');
+    a.href = normalized.text;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.innerText = normalized.linkLabel || normalized.text;
+    bubble.appendChild(a);
+    return;
+  }
+
+  bubble.innerText = normalized.text || '';
+}
+
+function renderMessage(item, pushToState = true){
+  const row = document.createElement('div');
+  row.className = 'row ' + item.side + ' fade';
+
+  if(item.messageId) row.dataset.messageId = item.messageId;
+  if(item.defaultReply !== undefined) row.dataset.defaultReply = item.defaultReply;
+  if(item.customReply !== undefined) row.dataset.customReply = item.customReply;
+  if(item.userText !== undefined) row.dataset.userText = item.userText;
+
+  const avatarEl = document.createElement('img');
+  avatarEl.className = 'msg-avatar';
+  avatarEl.src = item.avatar || kuminAvatar;
+  avatarEl.crossOrigin = "anonymous";
+  avatarEl.alt = item.name || CONFIG.titleName;
+
+  const group = document.createElement('div');
+  group.className = 'message-group';
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'name';
+  nameEl.innerText = item.name || CONFIG.titleName;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+
+  renderBubbleContent(bubble, item);
+
+  group.appendChild(nameEl);
+  group.appendChild(bubble);
+
+  if(item.side === 'right'){
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+
+    const dots = document.createElement('button');
+    dots.className = 'msg-dots';
+    dots.type = 'button';
+    dots.innerText = '⋮';
+    dots.title = 'Ubah respon';
+    actions.appendChild(dots);
+
+    row.appendChild(group);
+    row.appendChild(actions);
+    row.appendChild(avatarEl);
+  } else {
+    row.appendChild(avatarEl);
+    row.appendChild(group);
+  }
+
+  chatBox.appendChild(row);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  if(pushToState){
+    chatMessages.push(item);
+    persistState();
+  }
+  return row;
+}
+
+function getMemoryReplyForUserText(text){
+  const norm = normalizeText(text);
+  const exact = memoryActive.find(x => normalizeText(x.user) === norm);
+  if(exact) return exact.ai;
+
+  const contains = memoryActive.find(x => normalizeText(x.user) && norm.includes(normalizeText(x.user)));
+  if(contains) return contains.ai;
+
+  return null;
+}
+
+function pickRandomReply(){
+  const memories = memoryActive.map(x => x.ai).filter(Boolean);
+  const pool = [...baseReplies, ...memories];
+  const reply = pool[Math.floor(Math.random() * pool.length)] || "oke.";
+  return reply;
+}
+
+function openReplyEditor(row){
+  if(!row) return;
+  replyInput.value = row.dataset.customReply || row.dataset.defaultReply || '';
+  replyTargetInfo.innerText = `Untuk pesan: "${row.dataset.userText || ''}"`;
+  replyModal.dataset.messageId = row.dataset.messageId || '';
+  replyModal.style.display = 'flex';
+}
+
+function saveCustomReply(){
+  const messageId = replyModal.dataset.messageId;
+  const row = chatBox.querySelector(`[data-message-id="${CSS.escape(messageId)}"]`);
+  if(!row) return;
+
+  const custom = replyInput.value.trim();
+  row.dataset.customReply = custom;
+
+  const idx = chatMessages.findIndex(x => x.messageId === messageId);
+  if(idx >= 0){
+    chatMessages[idx].customReply = custom;
+    persistState();
+  }
+
+  alert('Respon sudah diubah!');
+  closeReplyModal();
+}
+
+function resetCustomReply(){
+  const messageId = replyModal.dataset.messageId;
+  const row = chatBox.querySelector(`[data-message-id="${CSS.escape(messageId)}"]`);
+  if(!row) return;
+
+  row.dataset.customReply = '';
+  replyInput.value = row.dataset.defaultReply || '';
+
+  const idx = chatMessages.findIndex(x => x.messageId === messageId);
+  if(idx >= 0){
+    chatMessages[idx].customReply = '';
+    persistState();
+  }
+
+  alert('Respon dikembalikan ke default!');
+}
+
+chatBox.addEventListener('click', (e) => {
+  const dots = e.target.closest('.msg-dots');
+  if(!dots) return;
+  const row = dots.closest('.row[data-message-id]');
+  if(row) openReplyEditor(row);
+});
+
+/* =========================
+   CHAT ACTIONS
+========================= */
+function saveToLocal(){
+  persistState();
+  dirtyChanges = false;
+  alert('Chat berhasil disimpan di browser ini!');
+  closeActionModal();
+}
+
+function exportChatJSON(){
+  const data = {
+    version: 1,
+    selectedYear,
+    messageCounter,
+    noteText: document.getElementById('noteText').innerText,
+    messages: chatMessages,
+    exportedAt: new Date().toISOString(),
+    settings: {
+      aylaName,
+      kuminAlias,
+      aylaAvatar,
+      kuminAvatar
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `chat-kumin-${selectedYear || 'all'}-${formatTanggalFile()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  closeActionModal();
+}
+
+function openImportChatModal(){
+  importChatModal.style.display = 'flex';
+}
+
+function pickImportChatFile(){
+  importChatFile.click();
+}
+
+function clearChatUIOnly(){
+  chatBox.innerHTML = '';
+  chatMessages = [];
+  messageCounter = 0;
+  activeTypingRow = null;
+}
+
+function resetChatOnly(){
+  if(!confirm('Reset chat saja? Memori tidak akan dihapus.')) return;
+  localStorage.removeItem(STORAGE_CHAT);
+  localStorage.removeItem(STORAGE_YEAR);
+  localStorage.removeItem(STORAGE_DIRTY);
+  clearChatUIOnly();
+  selectedYear = null;
+  inputField.value = '';
+  inputField.disabled = true;
+  sendBtn.disabled = true;
+  document.getElementById('openActions').disabled = true;
+  helperText.innerText = 'Pilih tahun kelahiran dulu';
+  yearMenu.style.display = 'flex';
+  document.querySelectorAll('.year-item').forEach(i => i.classList.remove('selected'));
+  document.getElementById('startBtn').classList.add('disabled');
+  closeActionModal();
+  markSaved();
+}
+
+function replayFromTop(){
+  closeActionModal();
+
+  if(!selectedYear){
+    alert('Pilih tahun dulu ya.');
+    return;
+  }
+
+  if(!confirm('Replay dari awal tanpa hapus memori AI?')) return;
+
+  clearChatUIOnly();
+  helperText.innerText = 'Memutar ulang dari awal...';
+
+  localStorage.removeItem(STORAGE_CHAT);
+  localStorage.removeItem(STORAGE_DIRTY);
+
+  dirtyChanges = false;
+
+  container.classList.add('warp');
+  container.classList.add('intro-zoom');
+  setTimeout(() => {
+    container.classList.remove('warp');
+    container.classList.remove('intro-zoom');
+  }, 900);
+
+  inputField.disabled = false;
+  document.getElementById('openActions').disabled = false;
+  sendBtn.disabled = false;
+
+  startIntroTyping();
+}
+
+function buildExportClone(){
+  const clone = container.cloneNode(true);
+  clone.classList.add('export-clone');
+  clone.style.display = 'flex';
+  clone.style.position = 'relative';
+  clone.style.left = '0';
+  clone.style.top = '0';
+  clone.style.margin = '0';
+  clone.style.width = '460px';
+  clone.style.maxWidth = '460px';
+  clone.style.height = 'auto';
+  clone.style.minHeight = '0';
+  clone.style.transform = 'none';
+  clone.style.boxShadow = 'none';
+  clone.style.borderRadius = '16px';
+  clone.style.overflow = 'visible';
+  clone.style.background = '#fff';
+
+  const inputWrap = clone.querySelector('.input-wrap');
+  if(inputWrap) inputWrap.remove();
+
+  const chatBoxClone = clone.querySelector('.chat-box');
+  if(chatBoxClone){
+    chatBoxClone.style.height = 'auto';
+    chatBoxClone.style.maxHeight = 'none';
+    chatBoxClone.style.overflow = 'visible';
+  }
+
+  const chatWrapClone = clone.querySelector('.chat-wrap');
+  if(chatWrapClone){
+    chatWrapClone.style.height = 'auto';
+    chatWrapClone.style.overflow = 'visible';
+  }
+
+  return clone;
+}
+
+async function saveChatToImage(){
+  closeActionModal();
+  helperText.innerText = "Menyiapkan screenshot full chat...";
+
+  const exportAreaEl = document.getElementById('exportArea');
+  exportAreaEl.innerHTML = '';
+
+  const clone = buildExportClone();
+  exportAreaEl.appendChild(clone);
+  exportAreaEl.style.display = 'block';
+
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+
+  try {
+    const canvas = await html2canvas(clone, {
+      backgroundColor: "#f8fbff",
+      useCORS: true,
+      allowTaint: true,
+      scale: 2,
+      width: clone.scrollWidth,
+      height: clone.scrollHeight,
+      windowWidth: clone.scrollWidth,
+      windowHeight: clone.scrollHeight,
+      scrollX: 0,
+      scrollY: 0
+    });
+
+    const link = document.createElement('a');
+    link.download = `chat-kumin-${selectedYear || 'full'}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    helperText.innerText = "Gambar full chat tersimpan!";
+  } catch (err) {
+    console.error('Error screenshot:', err);
+    helperText.innerText = "Gagal menyimpan gambar";
+  } finally {
+    exportAreaEl.style.display = 'none';
+    exportAreaEl.innerHTML = '';
+  }
+}
+
+/* =========================
+   NAMA & AVATAR
+========================= */
+function triggerPickAvatar(who){
+  if(who === 'kumin'){
+    avatarPickKumin.value = '';
+    avatarPickKumin.click();
+  } else {
+    avatarPickAyla.value = '';
+    avatarPickAyla.click();
+  }
+}
+
+function fileToDataURL(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+avatarPickKumin.addEventListener('change', async () => {
+  const file = avatarPickKumin.files && avatarPickKumin.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await fileToDataURL(file);
+    kuminAvatar = dataUrl;
+    persistState();
+    alert('Avatar Kumin berhasil diganti dan disimpan lokal.');
+  }catch(e){
+    alert('Gagal membaca file avatar Kumin.');
+  }
+});
+
+avatarPickAyla.addEventListener('change', async () => {
+  const file = avatarPickAyla.files && avatarPickAyla.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await fileToDataURL(file);
+    aylaAvatar = dataUrl;
+    persistState();
+    alert('Avatar Ayla berhasil diganti dan disimpan lokal.');
+  }catch(e){
+    alert('Gagal membaca file avatar Ayla.');
+  }
+});
+
+function changeAylaName(){
+  const next = prompt('Nama Ayla:', aylaName);
+  if(next === null) return;
+  const clean = next.trim();
+  if(!clean){
+    alert('Nama tidak boleh kosong.');
+    return;
+  }
+  aylaName = clean;
+  persistState();
+  alert('Nama Ayla berhasil diubah.');
+}
+
+function changeKuminAlias(){
+  const next = prompt('Alias Kumin:', kuminAlias);
+  if(next === null) return;
+  kuminAlias = next.trim();
+  persistState();
+  alert('Alias Kumin berhasil diubah.');
+}
+
+function resetDefaultSettings(){
+  if(!confirm('Kembalikan avatar dan nama ke default?')) return;
+
+  localStorage.removeItem(CONFIG.aylaAvatarStorageKey);
+  localStorage.removeItem(CONFIG.kuminAvatarStorageKey);
+  localStorage.removeItem(CONFIG.aylaNameStorageKey);
+  localStorage.removeItem(CONFIG.kuminAliasStorageKey);
+
+  aylaAvatar = CONFIG.aylaAvatarDefault;
+  kuminAvatar = CONFIG.kuminAvatarDefault;
+  aylaName = 'Zhafira Ayla Puteri';
+  kuminAlias = '';
+
+  persistState();
+  alert('Semua pengaturan sudah kembali ke default.');
+}
+
+/* =========================
+   INTERNAL LOAD CHAT FROM LINK
+========================= */
+async function loadChatFromInternalLink(){
+  if(!CONFIG.chatJsonLink) return false;
+
+  try{
+    const res = await fetch(CONFIG.chatJsonLink, { cache: "no-store" });
+    if(!res.ok) throw new Error("Gagal fetch");
+    const parsed = await res.json();
+
+    if(parsed && parsed.version && Array.isArray(parsed.messages)){
+      loadChatStateFromObject(parsed);
+      return true;
+    }
+
+    if(Array.isArray(parsed)){
+      loadChatStateFromObject({
+        selectedYear: selectedYear,
+        messageCounter: parsed.length,
+        messages: parsed
+      });
+      return true;
+    }
+
+    return false;
+  }catch(e){
+    console.error("Load chat dari link gagal:", e);
+    return false;
+  }
+}
+
+function loadChatStateFromObject(data){
+  if(!data || typeof data !== 'object' || !Array.isArray(data.messages)){
+    throw new Error('Invalid chat object');
+  }
+
+  selectedYear = data.selectedYear || selectedYear || null;
+  messageCounter = Number(data.messageCounter || 0);
+  chatMessages = data.messages.map(x => ({
+    side: x.side || 'left',
+    kind: x.kind || 'text',
+    text: x.text || '',
+    name: x.name || (x.side === 'right' ? aylaName : getKuminDisplayName()),
+    avatar: x.avatar || (x.side === 'right' ? aylaAvatar : kuminAvatar),
+    caption: x.caption || '',
+    linkLabel: x.linkLabel || '',
+    messageId: x.messageId || '',
+    userText: x.userText || '',
+    defaultReply: x.defaultReply || '',
+    customReply: x.customReply || ''
+  }));
+
+  chatBox.innerHTML = '';
+  chatMessages.forEach(msg => renderMessage(msg, false));
+
+  inputField.disabled = false;
+  sendBtn.disabled = false;
+  document.getElementById('openActions').disabled = false;
+  yearMenu.style.display = 'none';
+  helperText.innerText = 'Chat dimuat dari data JSON!';
+  markSaved();
+}
+
+/* =========================
+   INTRO / BOT REPLY
+========================= */
+function showTypingAndReply(replyText, afterMs = 1200){
+  addTypingBubble();
+  setTimeout(() => {
+    removeTypingBubble();
+
+    const payload = normalizeReplyItem(replyText);
+
+    renderMessage({
+      side:'left',
+      kind: payload.kind || 'text',
+      text: payload.text || '',
+      name:getKuminDisplayName(),
+      avatar:kuminAvatar,
+      caption: payload.caption || '',
+      linkLabel: payload.linkLabel || ''
+    }, true);
+
+    helperText.innerText = "Chat aktif! Ketik pesanmu...";
+    markDirty();
+  }, afterMs);
+}
+
+function getSimpleScriptReplies(){
+  return [
+    getDefaultGreetingReply(),
+    ...baseReplies
+  ];
+}
+
+function runScriptedReplies(){
+  const replies = getSimpleScriptReplies();
+  let delay = 1000;
+  replies.forEach((item) => {
+    setTimeout(() => {
+      showTypingAndReply(item, 700);
+    }, delay);
+    delay += 1050;
+  });
+}
+
+function startIntroTyping(){
+  inputField.classList.add('anim-zoom');
+  container.classList.add('typing-focus');
+  inputField.value = '';
+
+  const birthdayMessage = getGreetingText();
+  let i = 0;
+
+  const typingInterval = setInterval(() => {
+    if (i <= birthdayMessage.length) {
+      inputField.value = birthdayMessage.slice(0, i);
+      helperText.innerText = inputField.value;
+      i++;
+    } else {
+      clearInterval(typingInterval);
+      inputField.classList.remove('anim-zoom');
+      container.classList.remove('typing-focus');
+
+      const firstId = 'msg_' + (++messageCounter);
+      renderMessage({
+        side:'right',
+        kind:'text',
+        text:birthdayMessage,
+        name:aylaName,
+        avatar:aylaAvatar,
+        messageId:firstId,
+        userText:birthdayMessage,
+        defaultReply:getDefaultGreetingReply(),
+        customReply:''
+      }, true);
+
+      showTypingAndReply(getDefaultGreetingReply(), 900);
+      runScriptedReplies();
+
+      inputField.value = '';
+      helperText.innerText = "Chat aktif! Ketik pesanmu...";
+      markDirty();
+    }
+  }, 45);
+}
+
+/* =========================
+   SEND
+========================= */
+sendBtn.onclick = () => {
+  const val = inputField.value.trim();
+  if(!val) return;
+
+  const messageId = 'msg_' + (++messageCounter);
+  const defaultReply = getMemoryReplyForUserText(val) || pickRandomReply();
+
+  renderMessage({
+    side:'right',
+    kind:'text',
+    text: val,
+    name: aylaName,
+    avatar: aylaAvatar,
+    messageId,
+    userText: val,
+    defaultReply,
+    customReply: ''
+  }, true);
+
+  inputField.value = '';
+  helperText.innerText = `${getKuminDisplayName()} sedang mengetik...`;
+  addTypingBubble();
+  markDirty();
+
+  setTimeout(() => {
+    removeTypingBubble();
+
+    const current = chatMessages.find(x => x.messageId === messageId);
+    if(!current) return;
+
+    const reply = (current.customReply || '').trim() || current.defaultReply || 'oke.';
+    const payload = normalizeReplyItem(reply);
+
+    renderMessage({
+      side:'left',
+      kind: payload.kind || 'text',
+      text: payload.text || '',
+      name:getKuminDisplayName(),
+      avatar:kuminAvatar,
+      caption: payload.caption || '',
+      linkLabel: payload.linkLabel || ''
+    }, true);
+
+    helperText.innerText = "Chat aktif! Ketik pesanmu...";
+    markDirty();
+  }, 1500);
+};
+
+inputField.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') sendBtn.click();
+});
+
+inputField.addEventListener('focus', () => container.classList.add('focus-zoom'));
+inputField.addEventListener('blur', () => {
+  container.classList.remove('focus-zoom');
+  if(!inputField.value.trim()){
+    container.classList.remove('typing-focus');
+  }
+});
+
+let typingTimeout = null;
+inputField.addEventListener('input', () => {
+  container.classList.add('typing-focus');
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    if(document.activeElement !== inputField && !inputField.value.trim()){
+      container.classList.remove('typing-focus');
+    }
+  }, 450);
+  markDirty();
+});
+
+/* =========================
+   YEAR PICKER
+========================= */
+document.getElementById('yearList').addEventListener('click', (e) => {
+  const item = e.target.closest('.year-item');
+  if(!item) return;
+
+  document.querySelectorAll('.year-item').forEach(i => i.classList.remove('selected'));
+  item.classList.add('selected');
+  selectedYear = item.dataset.year;
+  document.getElementById('startBtn').classList.remove('disabled');
+});
+
+document.getElementById('autoSaveCheck').addEventListener('change', () => {
+  autoSaveLocal = autoSaveCheck.checked;
+  localStorage.setItem(STORAGE_AUTOSAVE, autoSaveLocal ? '1' : '0');
+});
+
+document.getElementById('startBtn').onclick = async () => {
+  if(!selectedYear) return;
+
+  autoSaveLocal = autoSaveCheck.checked;
+  localStorage.setItem(STORAGE_AUTOSAVE, autoSaveLocal ? '1' : '0');
+
+  persistState();
+
+  container.classList.add('warp');
+  container.classList.add('intro-zoom');
+  setTimeout(() => {
+    container.classList.remove('warp');
+    container.classList.remove('intro-zoom');
+  }, 900);
+
+  yearMenu.style.display = 'none';
+  inputField.disabled = false;
+  document.getElementById('openActions').disabled = false;
+  sendBtn.disabled = false;
+  startIntroTyping();
+};
+
+/* =========================
+   OPEN ACTIONS
+========================= */
+document.getElementById('openActions').onclick = () => {
+  actionModal.style.display = 'flex';
+};
+
+/* =========================
+   IMPORT CHAT
+========================= */
+function loadChatStateFromParsed(parsed){
+  if(parsed && parsed.version && Array.isArray(parsed.messages)){
+    loadChatStateFromObject(parsed);
+    return true;
+  }
+  if(Array.isArray(parsed)){
+    loadChatStateFromObject({
+      selectedYear: selectedYear,
+      messageCounter: parsed.length,
+      messages: parsed
+    });
+    return true;
+  }
+  return false;
+}
+
+function importChatFileNow(){
+  const file = importChatFile.files && importChatFile.files[0];
+  if(!file){
+    alert('Pilih file JSON dulu.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(loadChatStateFromParsed(parsed)){
+        closeImportChatModal();
+        alert('Chat berhasil diimport.');
+      } else {
+        alert('Format JSON chat tidak cocok.');
+      }
+    } catch(e){
+      alert('File JSON tidak valid.');
+    }
+    importChatFile.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* =========================
+   LOAD STATE
+========================= */
+function renderChatMessages(){
+  chatBox.innerHTML = '';
+  chatMessages.forEach(msg => renderMessage(msg, false));
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function loadState(){
+  const savedAuto = localStorage.getItem(STORAGE_AUTOSAVE);
+  autoSaveLocal = savedAuto === '1';
+  autoSaveCheck.checked = autoSaveLocal;
+
+  const memoryData = getMemoryData();
+  memoryActive = memoryData.active;
+  memoryTrash = memoryData.trash;
+  updateMemoryUI();
+
+  updateHeaderTexts();
+
+  const savedChat = localStorage.getItem(STORAGE_CHAT);
+  if(savedChat){
+    try{
+      const parsed = JSON.parse(savedChat);
+      if(parsed && Array.isArray(parsed.messages)){
+        selectedYear = parsed.selectedYear || null;
+        messageCounter = Number(parsed.messageCounter || 0);
+        chatMessages = parsed.messages || [];
+        renderChatMessages();
+        yearMenu.style.display = 'none';
+        inputField.disabled = false;
+        sendBtn.disabled = false;
+        document.getElementById('openActions').disabled = false;
+        helperText.innerText = "Chat dimuat dari penyimpanan!";
+        markSaved();
+        return;
+      }
+    }catch(err){
+      console.warn('Tidak bisa membaca chat tersimpan.');
+    }
+  }
+
+  const loadedFromLink = await loadChatFromInternalLink();
+  if(loadedFromLink){
+    yearMenu.style.display = 'none';
+    inputField.disabled = false;
+    sendBtn.disabled = false;
+    document.getElementById('openActions').disabled = false;
+    helperText.innerText = 'Chat dimuat dari link internal!';
+    markSaved();
+    return;
+  }
+
+  yearMenu.style.display = 'flex';
+  inputField.disabled = true;
+  sendBtn.disabled = true;
+  document.getElementById('openActions').disabled = true;
+  markSaved();
+}
+
+/* =========================
+   LOCK
+========================= */
+window.onload = () => {
+  const sekarang = new Date();
+  const tahun = sekarang.getFullYear();
+  const tanggalBuka = new Date(CONFIG.lockDate);
+  const overlay = document.getElementById("lockOverlay");
+  const countdown = document.getElementById("countdown");
+
+  let tapCount = 0;
+  let keyBuffer = "";
+
+  if (tahun === 2026 && sekarang < tanggalBuka) {
+    overlay.style.display = "flex";
+
+    function updateCountdown() {
+      const now = new Date();
+      const selisih = tanggalBuka - now;
+      if (selisih <= 0) {
+        overlay.style.display = "none";
+        return;
+      }
+      const hari = Math.floor(selisih / (1000 * 60 * 60 * 24));
+      const jam = Math.floor((selisih / (1000 * 60 * 60)) % 24);
+      const menit = Math.floor((selisih / (1000 * 60)) % 60);
+      const detik = Math.floor((selisih / 1000) % 60);
+      countdown.textContent = `⏳ ${hari}h ${jam}j ${menit}m ${detik}d`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    document.addEventListener("click", () => {
+      tapCount++;
+      if (tapCount >= 10) overlay.style.display = "none";
+    });
+
+    document.addEventListener("keydown", (e) => {
+      keyBuffer += e.key.toLowerCase();
+      if (!"ayla".startsWith(keyBuffer)) {
+        keyBuffer = e.key.toLowerCase();
+      }
+      if (keyBuffer === "ayla") {
+        overlay.style.display = "none";
+        keyBuffer = "";
+      }
+    });
+  }
+
+  loadState();
+};
+
+function closeAllModals(){
+  closeActionModal();
+  closeMemoryModal();
+  closeReplyModal();
+  closeImportChatModal();
+}
+</script>
+</body>
+</html>
