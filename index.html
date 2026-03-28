@@ -1257,7 +1257,7 @@ const CONFIG = {
   chatJsonLink: "",
   socialLink: "https://kuningminum.github.io/Kumin/Global%20Links.html",
   titleName: "Kumin",
-  noteTextBase: "aku membuat website nya",
+  noteTextBase: "",
   lockDate: "2026-03-30T00:00:00"
 };
 let aylaAvatar = localStorage.getItem(CONFIG.aylaAvatarStorageKey) || CONFIG.aylaAvatarDefault;
@@ -1440,8 +1440,7 @@ function updateHeaderTexts(){
   topAvatar.src = kuminAvatar;
   topTitle.innerText = CONFIG.titleName;
   topSub.innerText = kuminAlias.trim() ? `alias: ${kuminAlias.trim()}` : 'Chat Ulang Tahun';
-  document.getElementById('noteText').innerText = `*${CONFIG.noteTextBase} pada ${today}*`;
-  if(introDateText) introDateText.innerText = `Tanggal hari ini: ${today}`;
+  if(introDateText) introDateText.innerText = ``;
   updateBalloonToggleLabel();
 }
 
